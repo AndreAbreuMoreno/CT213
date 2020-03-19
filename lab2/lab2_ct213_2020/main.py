@@ -7,14 +7,14 @@ import random
 import time
 
 # Select planning algorithm
-algorithm = 'dijkstra'
-# algorithm = 'greedy'
+# algorithm = 'dijkstra'
+algorithm = 'greedy'
 # algorithm = 'a_star'
 
 # Number of path plannings used in the Monte Carlo analysis
-num_iterations = 1
+# num_iterations = 1
 # num_iterations = 10
-# num_iterations = 100  # Monte Carlo
+num_iterations = 100  # Monte Carlo
 
 # Plot options
 save_fig = True  # if the figure will be used to the hard disk
@@ -82,7 +82,10 @@ path_planner = PathPlanner(cost_map)
 # so we may compute mean and standard deviation statistics in the Monte Carlo analysis.
 times = np.zeros((num_iterations, 1))
 costs = np.zeros((num_iterations, 1))
+n=0
 for i in range(num_iterations):
+    n+=1
+    print(n)
     problem_valid = False
     while not problem_valid:
         # Trying to generate a new problem
@@ -109,8 +112,7 @@ for i in range(num_iterations):
     toc = time.time()
     times[i] = toc - tic
     costs[i] = cost
-    plot_path(cost_map, start_position, goal_position, path, '%s_%d' % (algorithm, i), save_fig, show_fig, fig_format)
-
+    # plot_path(cost_map, start_position, goal_position, path, '%s_%d' % (algorithm, i), save_fig, show_fig, fig_format)
 
 # Print Monte Carlo statistics
 print(r'Compute time: mean: {0}, std: {1}'.format(np.mean(times), np.std(times)))

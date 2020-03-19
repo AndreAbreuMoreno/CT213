@@ -48,10 +48,35 @@ class PathPlanner(object):
         :rtype: list of tuples and float.
         """
 		# Todo: implement the Dijkstra algorithm
-		# The first return is the path as sequence of tuples (as returned by the method construct_path())
-		# The second return is the cost of the path
-        self.node_grid.reset()
-        return [], inf
+        pq = []
+
+        start = self.node_grid.get_node(start_position[0], start_position[1])
+        goal = self.node_grid.get_node(goal_position[0], goal_position[1])
+
+        start.f = 0
+        heapq.heappush(pq,(start.f, start))
+
+        while pq:
+            f, node = heapq.heappop(pq)
+            node.closed = True
+            node_i, node_j = node.get_position()
+
+            if node == goal:
+                path_dijkstra = self.construct_path(goal)
+                cost_dijkstra = goal.f
+                self.node_grid.reset()
+                return path_dijkstra, cost_dijkstra
+
+            for successor in self.node_grid.get_successors(node_i, node_j):
+                successor_node = self.node_grid.get_node(successor[0], successor[1])
+
+                if not successor_node.closed:
+                    if successor_node.f > node.f + self.cost_map.get_edge_cost(node.get_position(), successor_node.get_position()):
+                        successor_node.f = node.f + self.cost_map.get_edge_cost(node.get_position(), successor_node.get_position())
+
+                        successor_node.parent = node
+                        heapq.heappush(pq, (successor_node.f,successor_node))
+
 
     def greedy(self, start_position, goal_position):
         """
@@ -65,10 +90,38 @@ class PathPlanner(object):
         :rtype: list of tuples and float.
         """
 		# Todo: implement the Greedy Search algorithm
-		# The first return is the path as sequence of tuples (as returned by the method construct_path())
-		# The second return is the cost of the path
-        self.node_grid.reset()
-        return [], inf
+        pq = []
+
+        start = self.node_grid.get_node(start_position[0], start_position[1])
+        goal = self.node_grid.get_node(goal_position[0], goal_position[1])
+
+        start.g = start.distance_to(goal_position[0], goal_position[1])
+        start.f = 0
+        heapq.heappush(pq, (start.g, start))
+
+        while pq:
+            g, node = heapq.heappop(pq)
+            node.closed = True
+            node_i, node_j = node.get_position()
+
+            for successor in self.node_grid.get_successors(node_i, node_j):
+                successor_node = self.node_grid.get_node(successor[0], successor[1])
+
+                if not successor_node.closed:
+                    successor_node.closed = True
+                    successor_node.parent = node
+                    successor_node.f = node.f + self.cost_map.get_edge_cost(node.get_position(),successor_node.get_position())
+
+                    if successor_node == goal:
+                        path_greedy = self.construct_path(goal)
+                        cost_greedy = goal.f
+                        self.node_grid.reset()
+                        return path_greedy, cost_greedy
+
+                    successor_node.g = successor_node.distance_to(goal_position[0], goal_position[1])
+                    heapq.heappush(pq,(successor_node.g, successor_node))
+
+
 
     def a_star(self, start_position, goal_position):
         """
@@ -82,7 +135,31 @@ class PathPlanner(object):
         :rtype: list of tuples and float.
         """
 		# Todo: implement the A* algorithm
-		# The first return is the path as sequence of tuples (as returned by the method construct_path())
-		# The second return is the cost of the path
-        self.node_grid.reset()
-        return [], inf
+
+        pq = []
+        start = self.node_grid.get_node(start_position[0], start_position[1])
+        goal = self.node_grid.get_node(goal_position[0], goal_position[1])
+
+        start.g = 0
+        start.f = start.distance_to(goal_position[0], goal_position[1])
+        heapq.heappush(pq, (start.f, start))
+
+        while pq:
+            f, node = heapq.heappop(pq)
+            node.closed = True
+            node_i, node_j = node.get_position()
+
+            if node == goal:
+                path_a_star = self.construct_path(goal)
+                cost_a_star = goal.f
+                self.node_grid.reset()
+                return path_a_star, cost_a_star
+
+            for successor in self.node_grid.get_successors(node_i, node_j):
+                successor_node = self.node_grid.get_node(successor[0], successor[1])
+                if successor_node.f > node.g + self.cost_map.get_edge_cost(node.get_position(), successor_node.get_position())  + successor_node.distance_to(goal_position[0], goal_position[1]):
+                    successor_node.g = node.g + self.cost_map.get_edge_cost(node.get_position(), successor_node.get_position())
+                    successor_node.f = successor_node.g + successor_node.distance_to(goal_position[0], goal_position[1])
+                    successor_node.parent = node
+                    heapq.heappush(pq, (successor_node.f, successor_node))
+
