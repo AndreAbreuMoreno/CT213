@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from math import pi, cos, sin
+# import math
 from least_squares import least_squares
 from gradient_descent import gradient_descent
 from hill_climbing import hill_climbing
@@ -82,6 +83,11 @@ def fit_hill_climbing():
         """
         neighbors_list = []
         # Todo: Implement
+        i = 0
+        while i < num_neighbors:
+            angle = (pi/4)*i
+            neighbors_list.append(theta + np.array([delta*cos(angle), delta*sin(angle)]))
+            i += 1
         return neighbors_list
 
     theta, history = hill_climbing(cost_function, neighbors, np.array([0.0, 0.0]), 1.0e-10, 1000)
@@ -115,7 +121,9 @@ def fit_simulated_annealing():
         :rtype: numpy.array.
         """
         # Todo: Implement
-        pass  # Remove pass after implementing
+        angle = random.uniform(-pi, pi)
+        theta = theta + np.array([delta*cos(angle), delta*sin(angle)])
+        return theta
 
     def schedule(i):
         """
@@ -127,7 +135,8 @@ def fit_simulated_annealing():
         :rtype: float.
         """
         # Todo: Implement
-        pass  # Remove pass after implementing
+        temperature = temperature0/(1 + beta * (i ** 2) )
+        return temperature
 
     theta, history = simulated_annealing(cost_function, random_neighbor, schedule, np.array([0.0, 0.0]), 1.0e-10, 5000)
     return theta, history
@@ -160,9 +169,9 @@ def plot_optimization(history):
     return handle
 
 
-fig_format = 'png'
+# fig_format = 'png'
 # fig_format = 'svg'
-# fig_format = 'eps'
+fig_format = 'eps'
 # Recommended figure formats: .eps for Latex/Linux, .svg for MS Office, and .png for easy visualization in Windows.
 # The quality of .eps and .svg is far superior since these are vector graphics formats.
 

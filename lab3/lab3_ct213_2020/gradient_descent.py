@@ -22,4 +22,12 @@ def gradient_descent(cost_function, gradient_function, theta0, alpha, epsilon, m
     theta = theta0
     history = [theta0]
     # Todo: Implement Gradient Descent
+
+    count = 0
+
+    while (count < max_iterations) and (cost_function(theta) > epsilon):
+        theta = theta - alpha * gradient_function(theta)
+        history.append(theta)
+        count += 1
+
     return theta, history
